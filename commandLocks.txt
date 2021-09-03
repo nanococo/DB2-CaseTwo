@@ -1,0 +1,135 @@
+docker run --name mongoBD2 -d mongo:latest
+
+docker exec -it mongoBD2 bash
+
+mogno
+
+show dbs
+
+use pedidosYa
+
+db.restaurant.insert({
+    "name": "Restaurante Azul",
+    "locationX": 9.918020,
+    "locationY": -84.140046,
+    "radius": 50,
+    "rating": 4.4,
+    "foodTypes": ["Mexicano", "Comida Rapida"], 
+    "freeDelivery": true,
+    "deliveryTime": 34
+})
+
+db.restaurant.insert({
+    "name": "Restaurante Verde",
+    "locationX": 21.918020,
+    "locationY": -14.140046,
+    "radius": 35,
+    "rating": 4.3,
+    "foodTypes": ["Italinao", "Pizza"], 
+    "freeDelivery": false,
+    "deliveryTime": 15
+})
+
+db.restaurant.insert({
+    "name": "Restaurante Rojo",
+    "locationX": 11.918020,
+    "locationY": -15.140046,
+    "radius": 40,
+    "rating": 4.1,
+    "foodTypes": ["Americano", "Hamburguesas"], 
+    "freeDelivery": true,
+    "deliveryTime": 25
+})
+
+//Uso del where
+db.restaurant.find({"name" : "Restaurante Rojo"})
+
+//Funcion aggregate
+db.restaurant.aggregate(
+   [
+        {
+            $group:{
+                _id: null,
+                minRadius: { $min: "$radius" }
+            }
+        }
+   ]
+)
+
+
+use tuyaHome
+
+db.home.insert({
+    "name": "Casa Escazu",
+    "locationX": 9.918020,
+    "locationY": -84.140046,
+    "homeAreas":[
+        {
+            "areaName": "Sala",
+            "devices" : [
+                {
+                    "deviceName" : "Camara 1",
+                    "status": true,
+                    "batteryLevel" : 75,
+                    "options" : ["Cloud"]
+                }
+            ]
+        }
+    ]
+})
+
+db.home.insert({
+    "name": "Casa Santa Ana",
+    "locationX": 9.929798,
+    "locationY": -84.180359,
+    "homeAreas":[
+        {
+            "areaName": "Cocina",
+            "devices" : [
+                {
+                    "deviceName" : "Camara 3",
+                    "status": true,
+                    "batteryLevel" : 70,
+                    "options" : ["Cloud", "Local"]
+                }
+            ]
+        }
+    ]
+})
+
+db.home.insert({
+    "name": "Casa Lindora",
+    "locationX": 9.955383,
+    "locationY": -84.197048,
+    "homeAreas":[
+        {
+            "areaName": "Corredor",
+            "devices" : [
+                {
+                    "deviceName" : "Camara 2",
+                    "status": true,
+                    "batteryLevel" : 30,
+                    "options" : ["Local"]
+                }
+            ]
+        }
+    ]
+})
+
+//Uso del Where
+db.home.find({"name" : "Casa Lindora"})
+
+
+//Aggregate function
+db.home.aggregate(
+   [
+        { "$unwind": "$homeAreas" },
+        { "$unwind": "$homeAreas.devices" },
+        {
+            $group:{
+                _id: null,
+                minBattery: { $min: "$homeAreas.devices.batteryLevel" }
+            }
+        }
+   ]
+)
